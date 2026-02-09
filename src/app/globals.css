@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@media print {
+  @page {
+    margin: 0;
+  }
+  body {
+    margin: 0.5cm;
+  }
+}

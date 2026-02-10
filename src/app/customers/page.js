@@ -6,6 +6,7 @@ import {
   Trash2 
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'react-hot-toast'; // toast import කළා
 
 export default function Customers() {
   const [customers, setCustomers] = useState([]);
@@ -39,8 +40,9 @@ export default function Customers() {
     const { error } = await supabase.from('customers').insert([newCustomer]);
     
     if (error) {
-      alert("Error: " + error.message);
+      toast.error("Error: " + error.message); // toast error popup
     } else {
+      toast.success("Customer registered successfully!"); // toast success popup
       setNewCustomer({ name: '', phone: '', email: '', address: '' });
       fetchCustomers();
     }
@@ -50,7 +52,12 @@ export default function Customers() {
   const deleteCustomer = async (id) => {
     if (confirm("Are you sure you want to delete this customer?")) {
       const { error } = await supabase.from('customers').delete().eq('id', id);
-      if (!error) fetchCustomers();
+      if (!error) {
+        toast.success("Customer deleted"); // success toast
+        fetchCustomers();
+      } else {
+        toast.error("Delete failed!");
+      }
     }
   };
 
@@ -62,8 +69,6 @@ export default function Customers() {
   return (
     <div className="min-h-screen bg-[#f1f5f9] flex font-sans w-full">
       
-      {/* Sidebar ඉවත් කර ඇත */}
-
       <main className="flex-1 p-8 overflow-y-auto">
         <div className="max-w-6xl mx-auto">
           <header className="flex justify-between items-center mb-8">

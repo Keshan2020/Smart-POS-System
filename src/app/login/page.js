@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useRouter } from 'next/navigation';
+import { toast } from 'react-hot-toast'; // toast import කළා
 
 export default function AuthPage() {
   const [email, setEmail] = useState('');
@@ -29,7 +30,7 @@ export default function AuthPage() {
       const { data, error } = await supabase.auth.signUp({ email, password });
       
       if (error) {
-        alert(error.message);
+        toast.error(error.message); // Alert වෙනුවට toast.error
       } else if (data.user && businessName) {
         // 2. Register වීම සාර්ථක නම් Business නම database එකට දැමීම
         const { error: dbError } = await supabase
@@ -37,17 +38,19 @@ export default function AuthPage() {
           .insert([{ id: data.user.id, business_name: businessName }]);
         
         if (dbError) {
-          alert("Error saving business details: " + dbError.message);
+          toast.error("Error saving business details: " + dbError.message);
         } else {
-          alert("Check your email for confirmation!");
+          toast.success("Check your email for confirmation!"); // Alert වෙනුවට toast.success
         }
       } else if (data.user) {
-        alert("Check your email for confirmation!");
+        toast.success("Check your email for confirmation!");
       }
     } else {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) alert(error.message);
-      else {
+      if (error) {
+        toast.error(error.message);
+      } else {
+        toast.success("Welcome back!");
         router.push('/'); 
         router.refresh(); // Layout එක refresh කිරීමට
       }

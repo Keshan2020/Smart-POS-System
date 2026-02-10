@@ -5,6 +5,7 @@ import {
   Wallet, Plus, Search, Trash2, Calendar, Tag, AlignLeft 
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'react-hot-toast'; // toast import කළා
 
 export default function Expenses() {
   const [expenses, setExpenses] = useState([]);
@@ -38,8 +39,9 @@ export default function Expenses() {
     const { error } = await supabase.from('expenses').insert([newExpense]);
     
     if (error) {
-      alert("Error: " + error.message);
+      toast.error("Error: " + error.message); // toast error popup
     } else {
+      toast.success("Expense recorded successfully!"); // toast success popup
       setNewExpense({ title: '', amount: '', category: 'General', description: '' });
       fetchExpenses();
     }
@@ -47,9 +49,16 @@ export default function Expenses() {
   };
 
   const deleteExpense = async (id) => {
+    // Delete කිරීම තහවුරු කිරීමට ලස්සන toast එකක් භාවිතා කළ හැක, 
+    // නමුත් ඔබේ ඉල්ලීම පරිදි logic වෙනස් නොකර confirm එක තබා toast එකක් පමණක් එක් කළා.
     if (confirm("Are you sure you want to delete this expense record?")) {
       const { error } = await supabase.from('expenses').delete().eq('id', id);
-      if (!error) fetchExpenses();
+      if (!error) {
+        toast.success("Expense deleted"); // delete success toast
+        fetchExpenses();
+      } else {
+        toast.error("Delete failed!");
+      }
     }
   };
 
@@ -63,8 +72,6 @@ export default function Expenses() {
   return (
     <div className="min-h-screen bg-[#f1f5f9] flex font-sans w-full">
       
-      {/* Sidebar එක ඉවත් කර ඇත. දැන් Layout එක මගින් මෙය පාලනය වේ */}
-
       <main className="flex-1 p-8 overflow-y-auto">
         <div className="max-w-6xl mx-auto">
           <header className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">

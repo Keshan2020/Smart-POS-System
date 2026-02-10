@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { Settings, Save, Store, User, ShieldCheck } from 'lucide-react';
+import { toast } from 'react-hot-toast'; // react-hot-toast import කිරීම
 
 export default function SettingsPage() {
   const [business, setBusiness] = useState({ business_name: '' });
@@ -31,8 +32,11 @@ export default function SettingsPage() {
       .from('business_details')
       .upsert({ id: user.id, business_name: business.business_name });
 
-    if (error) alert("Error: " + error.message);
-    else alert("Settings saved successfully!");
+    if (error) {
+      toast.error("Error: " + error.message); // Error popup එක
+    } else {
+      toast.success("Settings saved successfully!"); // Success popup එක
+    }
     setLoading(false);
   };
 

@@ -1,6 +1,7 @@
 import './globals.css'
 import Sidebar from './Sidebar'
-import Navbar from './Navbar' // Navbar එක import කිරීම
+import Navbar from './Navbar'
+import { Toaster } from 'react-hot-toast' // Toaster එක import කිරීම
 
 export const metadata = {
   title: 'My POS System',
@@ -12,11 +13,13 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <head>
         <link rel="icon" href="/favicon.ico" />
-        {/* Tailwind CDN එක දැනටමත් globals.css වල තිබේ නම් මෙය අත්‍යවශ්‍ය නොවේ */}
         <script src="https://cdn.tailwindcss.com"></script>
       </head>
       
       <body className="bg-gray-50 flex min-h-screen font-sans">
+        {/* Toast Notifications පෙන්වන ස්ථානය */}
+        <Toaster position="top-right" reverseOrder={false} />
+
         {/* වම් පසින් Sidebar එක ස්ථාවරව පවතී */}
         <Sidebar />
         

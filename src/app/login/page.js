@@ -26,34 +26,35 @@ export default function AuthPage() {
     setLoading(true);
     
     if (isRegistering) {
-  const { data, error } = await supabase.auth.signUp({ 
-    email, 
-    password,
-    options: {
-      data: {
-        business_name: businessName // Metadata ලෙසද මෙහි යැවිය හැක
+      // 1. User Register කිරීම
+      const { data, error } = await supabase.auth.signUp({ email, password });
+      
+      if (error) {
+        toast.error(error.message); // Alert වෙනුවට toast.error
+      } else if (data.user && businessName) {
+        // 2. Register වීම සාර්ථක නම් Business නම database එකට දැමීම
+        const { error: dbError } = await supabase
+          .from('business_details')
+          .insert([{ id: data.user.id, business_name: businessName }]);
+        
+        if (dbError) {
+          toast.error("Error saving business details: " + dbError.message);
+        } else {
+          toast.success("Check your email for confirmation!"); // Alert වෙනුවට toast.success
+        }
+      } else if (data.user) {
+        toast.success("Check your email for confirmation!");
+      }
+    } else {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        toast.error(error.message);
+      } else {
+        toast.success("Welcome back!");
+        router.push('/'); 
+        router.refresh(); // Layout එක refresh කිරීමට
       }
     }
-  });
-  
-  if (error) {
-    toast.error(error.message);
-  } else if (data?.user) {
-    // Business Details table එකට data දැමීම
-    const { error: dbError } = await supabase
-      .from('business_details')
-      .upsert([{ id: data.user.id, business_name: businessName }]);
-    
-    if (dbError) {
-      toast.error("User created but business details failed: " + dbError.message);
-    } else {
-      toast.success("Account created successfully!");
-      // කෙලින්ම Dashboard එකට යන්න අවශ්‍ය නම්:
-      router.push('/');
-      router.refresh();
-    }
-  }
-}
     setLoading(false);
   };
 
